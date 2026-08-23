@@ -1,0 +1,37 @@
+# Project TODO
+
+- [x] Establish strict Citizen, Officer, and Admin role definitions and protected route strategy.
+- [x] Create the refined CityResolve visual system, responsive application shell, and shared components.
+- [x] Build citizen dashboard with issue status overview and recent activity.
+- [x] Build issue submission form with title, description, category, location, and photo attachment support.
+- [x] Add AI-powered category and priority suggestions based on the issue description.
+- [x] Build citizen issue tracking with the exact status stages: Pending, In Progress, Resolved, Closed.
+- [x] Build officer workspace for assigned issues, status updates, and resolution notes.
+- [x] Build administrator issue management with assignment, priority controls, search, and filters.
+- [x] Build status-colour interactive map view for reported issue locations.
+- [x] Build administrator analytics for trends, resolution time, categories, and officer performance.
+- [x] Implement notifications for status changes and officer assignments.
+- [x] Add database schema, typed API procedures, validation, and access controls.
+- [x] Add unit tests for status workflows, role access, and AI suggestion handling.
+- [x] Add project documentation and verify responsive application behavior.
+- [x] Add category and date controls to administrator issue filtering.
+- [x] Add issue-volume trend data and an officer performance chart to administrator analytics.
+- [x] Add automated tests for strict Citizen, Officer, and Admin procedure access.
+- [x] Run and document desktop and mobile responsive visual verification.
+- [x] Add separate Citizen, Officer, and Administrator sign-in entry points.
+- [x] Route each authenticated account to its matching role workspace and show a clear access mismatch state.
+- [x] Add tests for role-targeted sign-in redirection and validate the revised sign-in experience.
+- [x] Preserve the chosen role sign-in path through authentication and automatically return to that role workspace after a matching sign-in.
+- [x] Add automated tests for authenticated role redirect and wrong-role mismatch handling.
+- [x] Add server-side photo analysis that returns safe title, description, category, and priority suggestions.
+- [x] Apply image-analysis suggestions to the citizen form after photo upload, while keeping all fields editable before submission.
+- [x] Add image-analysis tests, visually validate the upload-to-autofill flow, and document its privacy-aware limits.
+- [x] Add a tested client-side photo-analysis mapping helper to verify that suggested fields remain editable report values.
+- [x] Extract embedded GPS metadata from eligible uploaded photos only when it is present.
+- [x] Reverse-geocode embedded photo coordinates to autofill editable location and ward suggestions.
+- [x] Add no-GPS fallback messaging, tests, and privacy documentation for photo-derived location autofill.
+- [x] Request the uploading device’s current location with explicit browser consent when embedded photo GPS is unavailable.
+- [x] Reverse-geocode approved device coordinates into editable ward, location, latitude, and longitude fields.
+- [x] Add permission-denied fallback messaging, tests, and privacy documentation for device location use.
+- [x] Confirm whether the requested synchronization concerns source code, a project checkpoint, or another shared-project resource.
+- [x] Confirm the restarted development preview is available and notify the user.

@@ -1,0 +1,25 @@
+import { EmptyState, PageHeading, PriorityBadge, StatusBadge, formatDate } from "@/components/CivicPrimitives";
+import { RoleLayout } from "@/components/RoleLayout";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
+import { trpc } from "@/lib/trpc";
+import { Bell, CheckCircle2, ClipboardCheck, Clock3, MapPin, Wrench } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
+
+const officerNav = [{ icon: Wrench, label: "Field queue", path: "/officer" }, { icon: Bell, label: "Notifications", path: "/notifications" }];
+
+export default function OfficerDashboard() {
+  const { data: issues = [], isLoading } = trpc.officer.assigned.useQuery();
+  const utils = trpc.useUtils();
+  const update = trpc.officer.update.useMutation({ onSuccess: () => { utils.officer.assigned.invalidate(); toast.success("Issue status updated and the citizen has been notified."); }, onError: error => toast.error(error.message) });
+  const [notes, setNotes] = useState<Record<string, string>>({});
+  const active = issues.filter(issue => issue.status === "Pending" || issue.status === "In Progress");
+  const resolved = issues.filter(issue => issue.status === "Resolved");
+  const complete = (publicId: string) => update.mutate({ publicId, status: "Resolved", resolutionNote: notes[publicId] || "Resolution completed by field services." });
+  return <RoleLayout allowedRoles={["officer"]} title="Field Service" navigation={officerNav}><div className="mx-auto max-w-6xl space-y-8"><PageHeading eyebrow="Field operations" title="Your assigned queue" description="Prioritize the conditions in your care, document the work completed, and keep residents informed." />
+    <section className="grid gap-3 sm:grid-cols-3"><Card className="border-[#e1e9e3] bg-white shadow-sm"><CardContent className="p-5"><Clock3 className="h-5 w-5 text-[#bd7a10]" /><p className="mt-6 text-sm text-[#687970]">Active work</p><p className="mt-1 font-display text-4xl tracking-[-.05em] text-[#183d32]">{active.length}</p></CardContent></Card><Card className="border-[#e1e9e3] bg-white shadow-sm"><CardContent className="p-5"><CheckCircle2 className="h-5 w-5 text-[#218151]" /><p className="mt-6 text-sm text-[#687970]">Resolved</p><p className="mt-1 font-display text-4xl tracking-[-.05em] text-[#183d32]">{resolved.length}</p></CardContent></Card><Card className="border-[#e1e9e3] bg-white shadow-sm"><CardContent className="p-5"><ClipboardCheck className="h-5 w-5 text-[#3569b2]" /><p className="mt-6 text-sm text-[#687970]">Total assigned</p><p className="mt-1 font-display text-4xl tracking-[-.05em] text-[#183d32]">{issues.length}</p></CardContent></Card></section>
+    <section className="space-y-4">{isLoading ? <div className="rounded-2xl bg-white p-8 text-sm text-[#6c7c73]">Loading your queue…</div> : issues.length === 0 ? <EmptyState title="Your queue is clear" description="New work assigned by city operations will appear here when it is ready." /> : issues.map(issue => <article key={issue.id} className="rounded-[1.5rem] border border-[#e1e9e3] bg-white p-6 shadow-sm"><div className="flex flex-col justify-between gap-5 lg:flex-row"><div className="min-w-0"><div className="flex flex-wrap items-center gap-2"><span className="font-mono text-xs text-[#7c9186]">{issue.publicId}</span><StatusBadge status={issue.status} /><PriorityBadge priority={issue.priority} /></div><h2 className="mt-3 font-display text-2xl tracking-[-.04em] text-[#214538]">{issue.title}</h2><p className="mt-2 max-w-2xl text-sm leading-6 text-[#66786e]">{issue.description}</p><div className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-sm text-[#718078]"><span className="inline-flex items-center gap-1.5"><MapPin className="h-4 w-4 text-[#60917b]" />{issue.locationName}</span><span>Ward: {issue.ward}</span><span>Reported {formatDate(issue.createdAt)}</span></div></div><div className="flex shrink-0 flex-wrap items-start gap-2">{issue.status === "Pending" && <Button disabled={update.isPending} variant="outline" onClick={() => update.mutate({ publicId: issue.publicId, status: "In Progress" })} className="rounded-xl border-[#bcd5c4] text-[#216244] hover:bg-[#eef7f1]">Start work</Button>}<Button disabled={update.isPending || issue.status === "Resolved" || issue.status === "Closed"} onClick={() => complete(issue.publicId)} className="rounded-xl bg-[#146c50] hover:bg-[#0e583f]">Mark resolved</Button></div></div>{issue.status !== "Resolved" && issue.status !== "Closed" && <div className="mt-5 border-t border-[#edf1ee] pt-5"><label className="text-xs font-semibold uppercase tracking-[.1em] text-[#678177]">Resolution note</label><Textarea value={notes[issue.publicId] ?? ""} onChange={event => setNotes(current => ({ ...current, [issue.publicId]: event.target.value }))} placeholder="Record work completed, materials used, or a useful verification note." rows={2} className="mt-2 resize-none rounded-xl border-[#d8e3db] text-sm" /></div>}</article>)}</section>
+  </div></RoleLayout>;
+}
